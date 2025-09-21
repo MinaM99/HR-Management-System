@@ -1,0 +1,1000 @@
+{
+	"info": {
+		"_postman_id": "hr-management-system-api",
+		"name": "HR Management System API (Java Spring Boot, MySQL, JWT - Cookie-based)",
+		"description": "Complete API collection for HR Management System with HTTP-only Cookie-based JWT Authentication and Role-Based Access Control. Authentication uses HTTP-only cookies instead of Authorization headers for enhanced security.",
+		"version": "3.0",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Cookie-based authentication - cookies are automatically handled by Postman",
+					"// No need to manually set Authorization headers",
+					"console.log('Using cookie-based authentication - tokens are in HTTP-only cookies');"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/api",
+			"type": "string",
+			"description": "Base API URL"
+		},
+		{
+			"key": "admin_username",
+			"value": "admin",
+			"type": "string",
+			"description": "Admin user credentials (from database)"
+		},
+		{
+			"key": "admin_password",
+			"value": "Admin@123",
+			"type": "string",
+			"description": "Admin password (from database)"
+		},
+		{
+			"key": "hr_username",
+			"value": "hr.manager",
+			"type": "string",
+			"description": "HR user credentials (from database)"
+		},
+		{
+			"key": "hr_password",
+			"value": "Admin@123",
+			"type": "string",
+			"description": "HR password (from database)"
+		},
+		{
+			"key": "manager_username",
+			"value": "hr.manager",
+			"type": "string",
+			"description": "Manager user credentials (from database)"
+		},
+		{
+			"key": "manager_password",
+			"value": "Admin@123",
+			"type": "string",
+			"description": "Manager password (from database)"
+		},
+		{
+			"key": "employee_username",
+			"value": "demo.user",
+			"type": "string",
+			"description": "Employee user credentials (from database)"
+		},
+		{
+			"key": "employee_password",
+			"value": "Admin@123",
+			"type": "string",
+			"description": "Employee password (from database)"
+		},
+		{
+			"key": "deptId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "employeeId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "leaveRequestId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "payrollId",
+			"value": "1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "\ud83d\udd10 Authentication",
+			"description": "Authentication endpoints for login, registration, and token management",
+			"item": [
+				{
+					"name": "Login - Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Test login success - tokens are automatically stored in HTTP-only cookies",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success) {",
+									"        console.log('Admin login successful');",
+									"        console.log('User:', response.data.username);",
+									"        console.log('Roles:', response.data.roles);",
+									"        console.log('JWT tokens are stored in HTTP-only cookies');",
+									"    }",
+									"} else {",
+									"    console.log('Login failed:', pm.response.text());",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usernameOrEmail\": \"{{admin_username}}\",\n    \"password\": \"{{admin_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with admin credentials and automatically save JWT token"
+					}
+				},
+				{
+					"name": "Login - HR",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Test login success - tokens are automatically stored in HTTP-only cookies",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success) {",
+									"        console.log('HR login successful');",
+									"        console.log('User:', response.data.username);",
+									"        console.log('Roles:', response.data.roles);",
+									"        console.log('JWT tokens are stored in HTTP-only cookies');",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usernameOrEmail\": \"{{hr_username}}\",\n    \"password\": \"{{hr_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with HR credentials"
+					}
+				},
+				{
+					"name": "Login - Manager",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Test login success - tokens are automatically stored in HTTP-only cookies",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success) {",
+									"        console.log('Manager login successful');",
+									"        console.log('User:', response.data.username);",
+									"        console.log('Roles:', response.data.roles);",
+									"        console.log('JWT tokens are stored in HTTP-only cookies');",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usernameOrEmail\": \"{{manager_username}}\",\n    \"password\": \"{{manager_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with Manager credentials"
+					}
+				},
+				{
+					"name": "Login - Employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Test login success - tokens are automatically stored in HTTP-only cookies",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success) {",
+									"        console.log('Employee login successful');",
+									"        console.log('User:', response.data.username);",
+									"        console.log('Roles:', response.data.roles);",
+									"        console.log('JWT tokens are stored in HTTP-only cookies');",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usernameOrEmail\": \"{{employee_username}}\",\n    \"password\": \"{{employee_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with Employee credentials"
+					}
+				},
+				{
+					"name": "Register New User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"newuser\",\n    \"email\": \"newuser@hrms.com\",\n    \"password\": \"Password@123\",\n    \"confirmPassword\": \"Password@123\",\n    \"fullName\": \"John Doe\",\n    \"roles\": [\"EMPLOYEE\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user in the system"
+					}
+				},
+				{
+					"name": "Validate Token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/validate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"validate"
+							]
+						},
+						"description": "Validate the current JWT token"
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Test token refresh success - new tokens are automatically stored in HTTP-only cookies",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.success) {",
+									"        console.log('JWT tokens refreshed successfully');",
+									"        console.log('User:', response.data.username);",
+									"        console.log('New tokens are stored in HTTP-only cookies');",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Refresh JWT token using refresh token"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout and invalidate current token"
+					}
+				}
+			]
+		},
+		{
+			"name": "\ud83c\udfe2 Departments (ADMIN/HR/MANAGER)",
+			"description": "Department management endpoints - requires ADMIN, HR or MANAGER role",
+			"item": [
+				{
+					"name": "Get All Departments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/departments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments"
+							]
+						},
+						"description": "Retrieve all departments - Requires: ADMIN, HR, or MANAGER role"
+					}
+				},
+				{
+					"name": "Get Department by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/departments/{{deptId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments",
+								"{{deptId}}"
+							]
+						},
+						"description": "Get specific department by ID - Requires: ADMIN, HR, or MANAGER role"
+					}
+				},
+				{
+					"name": "Create Department (ADMIN/HR only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Information Technology\",\n    \"description\": \"IT Department handling all technology needs\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/departments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments"
+							]
+						},
+						"description": "Create new department - Requires: ADMIN or HR role"
+					}
+				},
+				{
+					"name": "Update Department (ADMIN/HR only)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Information Technology - Updated\",\n    \"description\": \"IT Department handling all technology needs - Updated\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/departments/{{deptId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments",
+								"{{deptId}}"
+							]
+						},
+						"description": "Update existing department - Requires: ADMIN or HR role"
+					}
+				},
+				{
+					"name": "Delete Department (ADMIN only)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/departments/{{deptId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments",
+								"{{deptId}}"
+							]
+						},
+						"description": "Delete department - Requires: ADMIN role only"
+					}
+				}
+			]
+		},
+		{
+			"name": "\ud83d\udc65 Employees (ADMIN/HR/MANAGER)",
+			"description": "Employee management endpoints - requires ADMIN, HR or MANAGER role",
+			"item": [
+				{
+					"name": "Get All Employees",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/employees",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"employees"
+							]
+						},
+						"description": "Retrieve all employees - Requires: ADMIN, HR, or MANAGER role"
+					}
+				},
+				{
+					"name": "Get Employee by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/employees/{{employeeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"employees",
+								"{{employeeId}}"
+							]
+						},
+						"description": "Get specific employee by ID - Requires: ADMIN, HR, or MANAGER role"
+					}
+				},
+				{
+					"name": "Create Employee (ADMIN/HR only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@company.com\",\n    \"phone\": \"+1234567890\",\n    \"position\": \"Software Developer\",\n    \"dateOfJoining\": \"2025-09-18\",\n    \"salary\": 75000.00,\n    \"department\": {\"id\": 2}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/employees",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"employees"
+							]
+						},
+						"description": "Create new employee - Requires: ADMIN or HR role"
+					}
+				},
+				{
+					"name": "Update Employee (ADMIN/HR only)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe Updated\",\n    \"email\": \"john.doe.updated@company.com\",\n    \"phone\": \"+1234567890\",\n    \"position\": \"Senior Software Developer\",\n    \"dateOfJoining\": \"2025-09-18\",\n    \"salary\": 85000.00,\n    \"department\": {\"id\": 2}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/employees/{{employeeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"employees",
+								"{{employeeId}}"
+							]
+						},
+						"description": "Update existing employee - Requires: ADMIN or HR role"
+					}
+				},
+				{
+					"name": "Delete Employee (ADMIN only)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/employees/{{employeeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"employees",
+								"{{employeeId}}"
+							]
+						},
+						"description": "Delete employee - Requires: ADMIN role only"
+					}
+				}
+			]
+		},
+		{
+			"name": "\ud83d\udcb0 Payroll (ADMIN/HR only)",
+			"description": "Payroll management endpoints - requires ADMIN or HR role only",
+			"item": [
+				{
+					"name": "Get All Payrolls",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/payroll",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payroll"
+							]
+						},
+						"description": "Retrieve all payroll records - Requires: ADMIN or HR role only"
+					}
+				},
+				{
+					"name": "Get Payroll by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/payroll/{{payrollId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payroll",
+								"{{payrollId}}"
+							]
+						},
+						"description": "Get specific payroll record - Requires: ADMIN or HR role only"
+					}
+				},
+				{
+					"name": "Create Payroll Record",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employeeId\": 1,\n    \"payPeriodStart\": \"2025-09-01\",\n    \"payPeriodEnd\": \"2025-09-30\",\n    \"basicSalary\": 75000.00,\n    \"overtime\": 2000.00,\n    \"bonuses\": 1000.00,\n    \"deductions\": 500.00,\n    \"taxes\": 15000.00,\n    \"netPay\": 62500.00\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payroll",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payroll"
+							]
+						},
+						"description": "Create new payroll record - Requires: ADMIN or HR role only"
+					}
+				}
+			]
+		},
+		{
+			"name": "\ud83c\udfd6\ufe0f Leave Requests",
+			"description": "Leave request management with role-based access",
+			"item": [
+				{
+					"name": "Get All Leave Requests (ADMIN/HR/MANAGER)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/leave-requests",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"leave-requests"
+							]
+						},
+						"description": "View all leave requests - Requires: ADMIN, HR, or MANAGER role"
+					}
+				},
+				{
+					"name": "Create Leave Request (All authenticated users)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employeeId\": 1,\n    \"leaveType\": \"ANNUAL\",\n    \"startDate\": \"2025-10-01\",\n    \"endDate\": \"2025-10-05\",\n    \"reason\": \"Family vacation\",\n    \"status\": \"PENDING\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/leave-requests",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"leave-requests"
+							]
+						},
+						"description": "Submit new leave request - Available to all authenticated users"
+					}
+				},
+				{
+					"name": "Approve Leave Request (ADMIN/HR/MANAGER)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comments\": \"Approved for vacation leave\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/leave-requests/{{leaveRequestId}}/approve",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"leave-requests",
+								"{{leaveRequestId}}",
+								"approve"
+							]
+						},
+						"description": "Approve leave request - Requires: ADMIN, HR, or MANAGER role"
+					}
+				},
+				{
+					"name": "Reject Leave Request (ADMIN/HR/MANAGER)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comments\": \"Request denied due to business needs\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/leave-requests/{{leaveRequestId}}/reject",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"leave-requests",
+								"{{leaveRequestId}}",
+								"reject"
+							]
+						},
+						"description": "Reject leave request - Requires: ADMIN, HR, or MANAGER role"
+					}
+				}
+			]
+		},
+		{
+			"name": "\ud83d\udc64 Self-Service (All authenticated users)",
+			"description": "Self-service endpoints available to all authenticated users",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/profile/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profile",
+								"me"
+							]
+						},
+						"description": "Get current user's profile - Available to all authenticated users"
+					}
+				},
+				{
+					"name": "Update My Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"phoneNumber\": \"+1234567890\",\n    \"address\": \"123 Main St, City, State 12345\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/profile/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profile",
+								"me"
+							]
+						},
+						"description": "Update current user's profile - Available to all authenticated users"
+					}
+				},
+				{
+					"name": "Get My Leave Requests",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/my-leave-requests",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"my-leave-requests"
+							]
+						},
+						"description": "Get current user's leave requests - Available to all authenticated users"
+					}
+				}
+			]
+		},
+		{
+			"name": "\ud83d\udeab Unauthorized Access Examples",
+			"description": "Examples of requests that will return 401/403 errors based on roles",
+			"item": [
+				{
+					"name": "Access Payroll as Employee (Should Fail)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/payroll",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payroll"
+							]
+						},
+						"description": "\u26a0\ufe0f This should return 403 Forbidden when using Employee credentials"
+					}
+				},
+				{
+					"name": "Delete Department as Manager (Should Fail)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/departments/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"departments",
+								"1"
+							]
+						},
+						"description": "\u26a0\ufe0f This should return 403 Forbidden - only ADMIN can delete departments"
+					}
+				},
+				{
+					"name": "Access without Token (Should Fail)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/employees",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"employees"
+							]
+						},
+						"description": "\u26a0\ufe0f This should return 401 Unauthorized - no JWT token provided"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,52 @@
+# Ignore unnecessary files during Docker build
+.git
+.gitignore
+README.md
+*.md
+.env
+.env.*
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Maven target directory
+target/
+!target/*.jar
+
+# Gradle files
+.gradle/
+build/
+
+# Node modules (if any)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker files
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Test files
+src/test/
+
+# Database files
+*.db
+*.sqlite
+
+# Temporary files
+tmp/
+temp/
+
+# Cache directories
+.cache/

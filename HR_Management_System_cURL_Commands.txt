@@ -1,0 +1,419 @@
+# HR Management System - Enhanced cURL Commands with Cookie-based JWT Authentication
+# Version: 3.0 - Cookie-based Authentication for Enhanced Security
+# Base URL: http://localhost:8080/api
+
+# =================================================================
+# 🔐 SECURITY & AUTHENTICATION OVERVIEW
+# =================================================================
+# 
+# This HR Management System uses JWT (JSON Web Token) authentication
+# with Role-Based Access Control (RBAC) via HTTP-Only Cookies.
+# All endpoints (except auth) automatically receive JWT tokens from cookies.
+#
+# ROLES & PERMISSIONS:
+# - ADMIN:    Full system access (all endpoints)
+# - HR:       Employee, payroll, and leave management  
+# - MANAGER:  Employee and leave management (no payroll)
+# - EMPLOYEE: Self-service only (profile, own leave requests)
+#
+# COOKIE-BASED AUTHENTICATION FLOW:
+# 1. Login with credentials → JWT tokens stored in HTTP-only cookies
+# 2. Cookies automatically sent with all subsequent requests
+# 3. Access token expires after 15 minutes (auto-refresh available)
+# 4. Refresh token expires after 7 days
+# 5. Logout clears all authentication cookies
+# =================================================================
+
+# =================================================================
+# 📋 SETUP INSTRUCTIONS
+# =================================================================
+# 
+# 1. Start your HR Management System server
+# 2. Use cookie jar (-c cookies.txt -b cookies.txt) for session persistence
+# 3. Run login command for desired role
+# 4. Execute API commands - cookies will be sent automatically
+# 5. Use logout to clear session when done
+#
+# COOKIE FILE USAGE:
+# - Create: Use -c cookies.txt to save cookies
+# - Load: Use -b cookies.txt to send saved cookies
+# - Both: Use -c cookies.txt -b cookies.txt for full session management
+# =================================================================
+
+# =================================================================
+# 🔑 AUTHENTICATION ENDPOINTS (Cookie-based)
+# =================================================================
+
+# Login as Admin (Full Access) - Creates authentication cookies
+curl -X POST "http://localhost:8080/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -c cookies.txt \
+  -d '{
+    "username": "admin@hrms.com",
+    "password": "admin123"
+  }'
+
+# Login as HR User (Employee & Payroll Management)  
+curl -X POST "http://localhost:8080/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -c cookies.txt \
+  -d '{
+    "username": "hr@hrms.com", 
+    "password": "hr123"
+  }'
+
+# Login as Manager (Employee Management)
+curl -X POST "http://localhost:8080/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -c cookies.txt \
+  -d '{
+    "username": "manager@hrms.com",
+    "password": "manager123" 
+  }'
+
+# Login as Employee (Self-Service)
+curl -X POST "http://localhost:8080/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -c cookies.txt \
+  -d '{
+    "username": "employee@hrms.com",
+    "password": "employee123"
+  }'
+
+# Register New User
+curl -X POST "http://localhost:8080/api/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "newuser@hrms.com",
+    "email": "newuser@hrms.com", 
+    "password": "password123",
+    "firstName": "John",
+    "lastName": "Doe",
+    "roles": ["EMPLOYEE"]
+  }'
+
+# Validate Current Token
+curl -X GET "http://localhost:8080/api/auth/validate" \ -b cookies.txt
+
+# Refresh Token (extend session)
+curl -X POST "http://localhost:8080/api/auth/refresh" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# Logout (invalidate token)
+curl -X POST "http://localhost:8080/api/auth/logout" \ -b cookies.txt
+
+# =================================================================
+# 🏢 DEPARTMENT MANAGEMENT (ADMIN/HR/MANAGER)
+# =================================================================
+
+# Get All Departments
+curl -X GET "http://localhost:8080/api/departments" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Department by ID
+curl -X GET "http://localhost:8080/api/departments/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Create New Department (ADMIN/HR only)
+curl -X POST "http://localhost:8080/api/departments" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "name": "Information Technology",
+    "description": "IT Department handling all technology needs",
+    "location": "Building A, Floor 3", 
+    "budget": 500000.00,
+    "managerId": null
+  }'
+
+# Update Department (ADMIN/HR only)
+curl -X PUT "http://localhost:8080/api/departments/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "name": "Information Technology - Updated",
+    "description": "IT Department handling all technology needs - Updated", 
+    "location": "Building A, Floor 4",
+    "budget": 600000.00,
+    "managerId": 1
+  }'
+
+# Delete Department (ADMIN only)
+curl -X DELETE "http://localhost:8080/api/departments/1" \ -b cookies.txt
+
+# =================================================================
+# 👥 EMPLOYEE MANAGEMENT (ADMIN/HR/MANAGER)
+# =================================================================
+
+# Get All Employees
+curl -X GET "http://localhost:8080/api/employees" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Employee by ID
+curl -X GET "http://localhost:8080/api/employees/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Search Employees by Name
+curl -X GET "http://localhost:8080/api/employees/search?name=John" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Employees by Department
+curl -X GET "http://localhost:8080/api/employees/department/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Employee by Email
+curl -X GET "http://localhost:8080/api/employees/email/john.doe@company.com" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Create New Employee (ADMIN/HR only)
+curl -X POST "http://localhost:8080/api/employees" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@company.com",
+    "phoneNumber": "+1234567890",
+    "hireDate": "2025-09-18",
+    "salary": 75000.00,
+    "position": "Software Developer",
+    "departmentId": 1,
+    "managerId": null
+  }'
+
+# Update Employee (ADMIN/HR only)
+curl -X PUT "http://localhost:8080/api/employees/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "firstName": "John",
+    "lastName": "Doe", 
+    "email": "john.doe@company.com",
+    "phoneNumber": "+1234567890",
+    "hireDate": "2025-09-18",
+    "salary": 80000.00,
+    "position": "Senior Software Developer",
+    "departmentId": 1,
+    "managerId": 2
+  }'
+
+# Delete Employee (ADMIN only)
+curl -X DELETE "http://localhost:8080/api/employees/1" \ -b cookies.txt
+
+# =================================================================
+# 💰 PAYROLL MANAGEMENT (ADMIN/HR only)
+# =================================================================
+
+# Get All Payroll Records
+curl -X GET "http://localhost:8080/api/payroll" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Payroll by ID
+curl -X GET "http://localhost:8080/api/payroll/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Payroll by Employee ID
+curl -X GET "http://localhost:8080/api/payroll/employee/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Payroll by Date Range
+curl -X GET "http://localhost:8080/api/payroll/date-range?startDate=2025-01-01&endDate=2025-12-31" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Payroll by Month/Year
+curl -X GET "http://localhost:8080/api/payroll/month/9/year/2025" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Create Payroll Record
+curl -X POST "http://localhost:8080/api/payroll" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "employeeId": 1,
+    "payPeriodStart": "2025-09-01",
+    "payPeriodEnd": "2025-09-30", 
+    "basicSalary": 75000.00,
+    "overtime": 2000.00,
+    "bonuses": 1000.00,
+    "deductions": 500.00,
+    "taxes": 15000.00,
+    "netPay": 62500.00
+  }'
+
+# Update Payroll Record  
+curl -X PUT "http://localhost:8080/api/payroll/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "employeeId": 1,
+    "payPeriodStart": "2025-09-01",
+    "payPeriodEnd": "2025-09-30",
+    "basicSalary": 75000.00,
+    "overtime": 2500.00,
+    "bonuses": 1500.00, 
+    "deductions": 600.00,
+    "taxes": 15500.00,
+    "netPay": 63900.00
+  }'
+
+# Delete Payroll Record (ADMIN only)
+curl -X DELETE "http://localhost:8080/api/payroll/1" \ -b cookies.txt
+
+# =================================================================
+# 🏖️ LEAVE REQUEST MANAGEMENT 
+# =================================================================
+
+# Get All Leave Requests (ADMIN/HR/MANAGER)
+curl -X GET "http://localhost:8080/api/leave-requests" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Leave Request by ID
+curl -X GET "http://localhost:8080/api/leave-requests/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Leave Requests by Employee ID (ADMIN/HR/MANAGER)
+curl -X GET "http://localhost:8080/api/leave-requests/employee/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Leave Requests by Status (ADMIN/HR/MANAGER)
+curl -X GET "http://localhost:8080/api/leave-requests/status/PENDING" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Get Leave Requests by Date Range
+curl -X GET "http://localhost:8080/api/leave-requests/date-range?startDate=2025-01-01&endDate=2025-12-31" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Create Leave Request (All authenticated users)
+curl -X POST "http://localhost:8080/api/leave-requests" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "employeeId": 1,
+    "leaveType": "ANNUAL",
+    "startDate": "2025-10-01",
+    "endDate": "2025-10-05",
+    "reason": "Family vacation",
+    "status": "PENDING"
+  }'
+
+# Update Leave Request 
+curl -X PUT "http://localhost:8080/api/leave-requests/1" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "employeeId": 1,
+    "leaveType": "ANNUAL",
+    "startDate": "2025-10-01", 
+    "endDate": "2025-10-07",
+    "reason": "Extended family vacation",
+    "status": "PENDING"
+  }'
+
+# Approve Leave Request (ADMIN/HR/MANAGER)
+curl -X PATCH "http://localhost:8080/api/leave-requests/1/approve" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "comments": "Approved for vacation leave"
+  }'
+
+# Reject Leave Request (ADMIN/HR/MANAGER)  
+curl -X PATCH "http://localhost:8080/api/leave-requests/1/reject" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "comments": "Request denied due to business needs"
+  }'
+
+# Delete Leave Request (ADMIN/HR or request owner)
+curl -X DELETE "http://localhost:8080/api/leave-requests/1" \ -b cookies.txt
+
+# =================================================================
+# 👤 SELF-SERVICE ENDPOINTS (All authenticated users)
+# =================================================================
+
+# Get My Profile
+curl -X GET "http://localhost:8080/api/profile/me" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Update My Profile  
+curl -X PUT "http://localhost:8080/api/profile/me" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "firstName": "John",
+    "lastName": "Doe",
+    "phoneNumber": "+1234567890",
+    "address": "123 Main St, City, State 12345"
+  }'
+
+# Get My Leave Requests
+curl -X GET "http://localhost:8080/api/my-leave-requests" \
+  -H "Content-Type: application/json" \ -b cookies.txt
+
+# Change My Password
+curl -X POST "http://localhost:8080/api/profile/change-password" \
+  -H "Content-Type: application/json" \ -b cookies.txt \
+  -d '{
+    "currentPassword": "oldpassword123", 
+    "newPassword": "newpassword123",
+    "confirmPassword": "newpassword123"
+  }'
+
+# =================================================================
+# 🚫 SECURITY TESTING - Unauthorized Access Examples  
+# =================================================================
+# These commands demonstrate the security controls in action
+
+# Try to access payroll without token (Should return 401)
+curl -X GET "http://localhost:8080/api/payroll" \
+  -H "Content-Type: application/json"
+
+# Try to access payroll with employee token (Should return 403)  
+# First login as employee, then use that token:
+curl -X GET "http://localhost:8080/api/payroll" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer EMPLOYEE_JWT_TOKEN_HERE"
+
+# Try to delete department with manager token (Should return 403)
+# Only ADMIN can delete departments:
+curl -X DELETE "http://localhost:8080/api/departments/1" \
+  -H "Authorization: Bearer MANAGER_JWT_TOKEN_HERE"
+
+# Try to access with invalid/expired token (Should return 401)
+curl -X GET "http://localhost:8080/api/employees" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer invalid_token_here"
+
+# =================================================================
+# 💡 USAGE TIPS & BEST PRACTICES
+# =================================================================
+#
+# 1. ENVIRONMENT VARIABLES:
+#    export JWT_TOKEN="your_token_here"  
+#    export BASE_URL="http://localhost:8080/api"
+#    Then use: curl -H "Authorization: Bearer $JWT_TOKEN" "$BASE_URL/employees"
+#
+# 2. TOKEN MANAGEMENT:
+#    - Tokens expire after 24 hours by default
+#    - Use refresh tokens for extended sessions
+#    - Always use HTTPS in production
+#
+# 3. ERROR HANDLING:
+#    - 401: Unauthorized (no token or invalid token)  
+#    - 403: Forbidden (insufficient permissions)
+#    - 404: Not Found (resource doesn't exist)
+#    - 400: Bad Request (invalid data)
+#
+# 4. ROLE TESTING:
+#    - Test each endpoint with different role tokens
+#    - Verify access controls work as expected
+#    - Document role requirements for your team
+#
+# 5. SECURITY:
+#    - Never log or expose JWT tokens
+#    - Use environment variables for credentials
+#    - Implement proper token rotation in production
+#
+# =================================================================
+# 📞 SUPPORT & DOCUMENTATION  
+# =================================================================
+# 
+# API Documentation: http://localhost:8080/swagger-ui.html
+# Health Check: http://localhost:8080/actuator/health
+# Application Info: http://localhost:8080/actuator/info
+#
+# For additional help or issues, refer to the project documentation
+# or contact the development team.
+#
+# =================================================================
