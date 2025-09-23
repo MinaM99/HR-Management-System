@@ -38,22 +38,25 @@ public class CustomUserDetailsService implements org.springframework.security.co
     private UserRepository userRepository;
     
     /**
-     * Loads user details by username/email for authentication only.
+     * Loads user details by username OR email for authentication.
      * 
      * This method is called only during the login process to validate
-     * user credentials. After successful authentication, user information
-     * is embedded in JWT tokens and no further database queries are needed.
+     * user credentials. It accepts both username and email addresses
+     * as login identifiers for better user experience.
+     * 
+     * After successful authentication, user information is embedded 
+     * in JWT tokens and no further database queries are needed.
      * 
      * Returns the User entity directly since it implements UserDetails.
      * 
-     * @param usernameOrEmail the username or email identifying the user
+     * @param usernameOrEmail the username OR email identifying the user
      * @return User entity (which implements UserDetails) containing user information and authorities
      * @throws UsernameNotFoundException if user is not found
      */
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        logger.debug("Loading user details for authentication: {}", usernameOrEmail);
+        logger.debug("Loading user details for authentication by username or email: {}", usernameOrEmail);
         
         try {
             // Find user by username or email (support both login methods)
@@ -77,7 +80,7 @@ public class CustomUserDetailsService implements org.springframework.security.co
                         user.isAccountNonLocked(),
                         user.getRoles().size());
             
-            logger.debug("Successfully loaded user details for authentication: {}", usernameOrEmail);
+            logger.debug("Successfully loaded user details for authentication by username or email: {}", usernameOrEmail);
             
             // Return User entity directly (it implements UserDetails)
             return user;
@@ -90,17 +93,5 @@ public class CustomUserDetailsService implements org.springframework.security.co
                         usernameOrEmail, e.getMessage(), e);
             throw new UsernameNotFoundException("Error loading user details: " + usernameOrEmail, e);
         }
-    }
-    
-    /**
-     * Loads user details by email address for authentication.
-     * 
-     * @param email the email identifying the user
-     * @return User entity (UserDetails) containing user information and authorities
-     * @throws UsernameNotFoundException if user with given email is not found
-     */
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
-        return loadUserByUsername(email); // Reuse the main method
     }
 }
