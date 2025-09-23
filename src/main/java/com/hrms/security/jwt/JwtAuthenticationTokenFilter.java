@@ -1,6 +1,6 @@
 package com.hrms.security.jwt;
 
-import com.hrms.security.service.UserDetailsServiceImpl;
+import com.hrms.security.service.UserPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * JWT Authentication Filter for processing JWT tokens from HTTP-only cookies.
@@ -40,9 +40,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtils jwtUtils;
-
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
 
@@ -81,9 +78,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             String jwt = parseJwtFromCookie(request);
             
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+                // Extract user information directly from JWT claims
+                Long userId = jwtUtils.getUserIdFromJwtToken(jwt);
                 String username = jwtUtils.getUsernameFromJwtToken(jwt);
+                String email = jwtUtils.getEmailFromJwtToken(jwt);
+                String fullName = jwtUtils.getFullNameFromJwtToken(jwt);
+                List<String> roles = jwtUtils.getRolesFromJwtToken(jwt);
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                // Create UserPrincipal directly from JWT claims (no database query needed)
+                UserPrincipal userDetails = UserPrincipal.create(userId, username, email, fullName, roles);
                 
                 // Create authentication token
                 UsernamePasswordAuthenticationToken authentication = 

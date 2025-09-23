@@ -6,8 +6,7 @@ import com.hrms.dto.auth.*;
 import com.hrms.entity.User;
 import com.hrms.security.jwt.JwtAuthenticationTokenFilter;
 import com.hrms.security.jwt.JwtUtils;
-import com.hrms.security.service.UserDetailsImpl;
-import com.hrms.security.service.UserDetailsServiceImpl;
+import com.hrms.security.service.CustomUserDetailsService;
 import com.hrms.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -83,7 +82,7 @@ public class AuthController {
     private JwtUtils jwtUtils;
     
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
     
     /**
      * Authenticates user and returns JWT tokens via HTTP-only cookies.
@@ -130,8 +129,8 @@ public class AuthController {
             // Set authentication in security context
             SecurityContextHolder.getContext().setAuthentication(authentication);
             
-            // Get authenticated user details
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            // Get authenticated user details (User entity during login)
+            User userDetails = (User) authentication.getPrincipal();
             
             // Generate JWT tokens
             String accessToken = jwtUtils.generateJwtToken(authentication);
@@ -308,7 +307,7 @@ public class AuthController {
             }
             
             String username = jwtUtils.getUsernameFromJwtToken(refreshToken);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
             
             // Generate new access token
             Authentication auth = new UsernamePasswordAuthenticationToken(

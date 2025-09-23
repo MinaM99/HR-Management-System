@@ -2,7 +2,7 @@ package com.hrms.config;
 
 import com.hrms.security.jwt.JwtAuthenticationEntryPoint;
 import com.hrms.security.jwt.JwtAuthenticationTokenFilter;
-import com.hrms.security.service.UserDetailsServiceImpl;
+import com.hrms.security.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +52,7 @@ import java.util.Arrays;
 public class WebSecurityConfig {
     
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
     
     @Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
@@ -98,7 +98,7 @@ public class WebSecurityConfig {
     @SuppressWarnings("deprecation")
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         
         // Optional: Hide user not found exceptions for security
